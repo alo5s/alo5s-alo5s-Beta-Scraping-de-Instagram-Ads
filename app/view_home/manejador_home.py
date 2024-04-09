@@ -13,7 +13,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 from seleniumwire import webdriver
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import random
-import json
 from app.utils.click import ClickManager
 
 
@@ -44,27 +43,29 @@ class ManejadorHome:
         else:
             print("La URL de origen está vacía. No se puede descargar el archivo.")
     
-    def obtener_detalles_publidad_video(self, soup, elemento):
-        # Buscar el span que contiene el texto de la publicidad
+    # agregardo y mejora
+    def obtener_detalles_publicidad(self, soup, elemento):
+        # Encuentra detalles de la publicidad, común a imágenes y videos.
         span = soup.find('span', class_='_ap3a _aaco _aacw _aacx _aad7 _aade') or soup.find('span', class_='x1lliihq x1plvlek xryxfnj x1n2onr6 x193iq5w xeuugli x1fj9vlw x13faqbe x1vvkbs x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x x1i0vuye xvs91rp x1s688f x5n08af x10wh9bi x1wdrske x8viiok x18hxmgj')
         titulo = span.text if span else None
 
-        # Buscar la URL de la publicación
         url_publicacion = soup.find('a', class_="_ad63")["href"] if soup.find('a', class_="_ad63") else None
 
-        # Buscar la descripción de la publicación
         descripcion_element = soup.find('span', class_='_ap3a _aaco _aacu _aacx _aad7 _aade')
         descripcion = descripcion_element.text if descripcion_element else None
 
-        # Para el total de reproducciones
+        return titulo, url_publicacion, descripcion
+
+
+    def obtener_detalles_publicidad_video(self, soup, elemento):
+        titulo, url_publicacion, descripcion = self.obtener_detalles_publicidad(soup, elemento)
         try:
             elemento_reproducciones = soup.select_one('section.xat24cr span.xdj266r')
             texto_reproducciones = elemento_reproducciones.text
-            total_reproducciones = texto_reproducciones.split()[0]
+            total_reproducciones = elemento_reproducciones.text.split()[0]
         except Exception as e:
             total_reproducciones = "0"
 
-        # Para el número de comentarios
         try:        
             elemento_comentarios = soup.select_one('div.x9f619 span.xdj266r')
             texto_comentarios = elemento_comentarios.text
@@ -74,48 +75,33 @@ class ManejadorHome:
 
         return titulo, url_publicacion, descripcion, total_reproducciones, total_comentarios
 
-    def obtener_detalles_publidad_img(self, soup,elemento):
-        """
-        Si es una publicidad, obtiene los detalles como quién la publicó,
-        la URL de la publicidad y más.
-        """
-        # Buscar el span que contiene el texto de la publicidad
-        span = soup.find('span', class_='_ap3a _aaco _aacw _aacx _aad7 _aade') or soup.find('span', class_='x1lliihq x1plvlek xryxfnj x1n2onr6 x193iq5w xeuugli x1fj9vlw x13faqbe x1vvkbs x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x x1i0vuye xvs91rp x1s688f x5n08af x10wh9bi x1wdrske x8viiok x18hxmgj')
-        titulo = span.text if span else None
 
-        # Buscar la URL de la publicación
-        url_publicacion = soup.find('a', class_="_ad63")["href"] if soup.find('a', class_="_ad63") else None
+    def obtener_detalles_publicidad_img(self, soup, elemento):
+        titulo, url_publicacion, descripcion = self.obtener_detalles_publicidad(soup, elemento)
+        total_like = "0"
+        total_comentarios = "0"
 
-        # Buscar la descripción de la publicación
-        descripcion_element = soup.find('span', class_='_ap3a _aaco _aacu _aacx _aad7 _aade')
-        descripcion = descripcion_element.text if descripcion_element else None
-
-
-        # Para el total de Me gustas de la imge
         try:
-            elemento_total_like = soup.select_one('section.xat24cr span.xdj266r')
-            texto_total_like = elemento_reproducciones.text
-            total_like = texto_total_like.split()[0]
+            elemento_total_like = soup.select_one('section.xat24cr span.x1vvkbs')
+            if elemento_total_like:
+                texto_total_like = elemento_total_like.text
+                total_like = texto_total_like.split()[0]
         except Exception as e:
-            total_like = "0"
+            print("Error al obtener el total de Me gusta:", e)
 
-        # Para el número de comentarios
-        try:        
-            elemento_comentarios = soup.select_one('div.x9f619 span.xdj266r')
-            texto_comentarios = elemento_comentarios.text
-            total_comentarios = texto_comentarios.split()[1]
+        try:
+            elemento_comentarios = soup.select_one('div.x9f619.xjbqb8w.x78zum5.x168nmei.x13lgxp2.x5pf9jr.xo71vjh.x1xmf6yo.x1uhb9sk.x1plvlek.xryxfnj.x1c4vz4f.x2lah0s.xdt5ytf.xqjyukv.x1qjc9v5.x1oa3qoh.x1nhvcw1 span.xdj266r')
+            if elemento_comentarios:
+                texto_comentarios = elemento_comentarios.text
+                total_comentarios = texto_comentarios.split()[0]
         except Exception as e:
-            total_comentarios = "0"
+            print("Error al obtener el total de comentarios:", e)
 
-        return titulo, url_publicacion, descripcion, total_like , total_comentarios
+        return titulo, url_publicacion, descripcion, total_like, total_comentarios
 
-
-
+        return titulo, url_publicacion, descripcion, total_like, total_comentarios
 
     def verificar_tipo_elemento(self, elemento):
-        """
-        Verifica si el elemento es una publicidad o una publicación.
-        """
         try:
             # Convierte el elemento a un objeto BeautifulSoup
             soup = BeautifulSoup(elemento.get_attribute('outerHTML'), 'html.parser')
@@ -129,12 +115,11 @@ class ManejadorHome:
         except Exception as e:
             print("Error al verificar el tipo de elemento:", e)
             return "Desconocido"
-    # Beta
+    # Beta 
     def guardar_datos_imagen_en_txt(self, tipo_elemento, titulo, url_publicacion, descripcion, total_me_gusta, total_comentarios, lista_url):
         with open('datos_publicidad_imagenes.txt', 'a', encoding='utf-8') as file:
-            file.write("==================================================== ==================================================== ==================================================== ==================================================== ==================================================== ==================================================== ==================================================== ====================================================\n")
-            file.write("==================================================== ==================================================== ==================================================== ==================================================== ==================================================== ==================================================== ==================================================== ====================================================\n")
-            file.write(" ")
+            #if mode == 'w':
+            file.write("====================================================\n")
             file.write(f"Tipo de elemento: {tipo_elemento} | Tipo: Imagen\n")
             file.write(f"Publicado Por: {titulo}\n")
             file.write(f"{'URL: ' + url_publicacion if url_publicacion else 'No tiene URL'}\n")
@@ -144,9 +129,8 @@ class ManejadorHome:
             file.write("URLs de las imágenes:\n")
             for idx, url in enumerate(lista_url, start=1):
                 file.write(f"Imagen {idx}: {url}\n")
-            file.write("==================================================== ==================================================== ==================================================== ==================================================== ==================================================== ==================================================== ==================================================== ====================================================\n")
-            file.write("==================================================== ==================================================== ==================================================== ==================================================== ==================================================== ==================================================== ==================================================== ====================================================\n")
-
+            #if mode == 'w':
+            file.write("====================================================\n")
     # Beta
     def guardar_datos_video_en_txt(self, tipo_elemento, titulo, url_publicacion, descripcion, total_reproducciones, numero_comentarios):
         with open('datos_publicidad_videos.txt', 'a', encoding='utf-8') as file:
@@ -159,12 +143,6 @@ class ManejadorHome:
             file.write("====================================================\n")
 
     def scrapy(self, article):
-        """
-        Un input article
-        Valida si es una publicidad o una publicación.
-        Valida si tien la opcion para ver mas(FALTA Y AJUSTE)
-
-        """
         container_div_detalle = article.find_elements(By.CSS_SELECTOR, self.ELEMENTO_DIV_SCRAPY)
 
         for elemento in container_div_detalle:
@@ -187,24 +165,17 @@ class ManejadorHome:
                     videos = container.find_elements(By.TAG_NAME, 'video')
                     
                     for video in videos:
-                        self.driver.execute_script(self.script)
-                        time.sleep(2)
+                        pass
+                        #self.driver.execute_script(self.script)
+                        #time.sleep(2)
                         #boton_grabar_video = elemento.find_element(By.CLASS_NAME, "Dowloader")
                         #boton_grabar_video.click()
                         #WebDriverWait(elemento, 400).until(EC.text_to_be_present_in_element((By.CLASS_NAME, "Dowloader"), "Listo"))
                         #print("El botón ha cambiado a 'Listo'")
                     
                     soup = BeautifulSoup(elemento.get_attribute('outerHTML'), 'html.parser')
-                    titulo, url_publicacion, descripcion, total_reproducciones, numero_comentarios  = self.obtener_detalles_publidad_video(soup, elemento)
-                    self.guardar_datos_video_en_txt(tipo_elemento, titulo, url_publicacion, descripcion, total_reproducciones, numero_comentarios)
-
-                    #print("====================================================")
-                    #print("Publicado Por:", titulo)
-                    #print(url_publicacion)
-                    #print(descripcion)
-                    #print("El total de Reproducciones es:", total_reproducciones)
-                    #print("El total de Comentarios es:", numero_comentarios)
-                    #print("====================================================")
+                    detalles = self.obtener_detalles_publicidad_video(soup, elemento)
+                    self.guardar_datos_video_en_txt(tipo_elemento, *detalles)
 
                 div_container_images = elemento.find_elements(By.CSS_SELECTOR, 'div._aagu')
                 for container in div_container_images:
@@ -230,17 +201,9 @@ class ManejadorHome:
                             lista_url.append(src)
                     
                     soup = BeautifulSoup(elemento.get_attribute('outerHTML'), 'html.parser')
-                    titulo, url_publicacion, descripcion, total_me_gusta , total_comentarios = self.obtener_detalles_publidad_img(soup, elemento)
-                    self.guardar_datos_imagen_en_txt(tipo_elemento, titulo, url_publicacion, descripcion, total_me_gusta, total_comentarios, lista_url)
+                    detalles = self.obtener_detalles_publicidad_img(soup, elemento)
+                    self.guardar_datos_imagen_en_txt(tipo_elemento, *detalles, lista_url)
 
-                    #print("====================================================")
-                    #print("Publicado Por:", titulo)
-                    #print(url_publicacion)
-                    #print(descripcion)
-                    #print("El total de Me gusta es:", total_me_gusta)
-                    #print("El total de Comentarios es:", total_comentarios)
-                    #print("====================================================")
-                    
             elif tipo_elemento == "Publicación":
                 print("Tipo de elemento:", tipo_elemento, " |   Tipo:", "Publicación")
 
@@ -276,7 +239,7 @@ class ManejadorHome:
         try:
             elementos_clicados = set()
             clics_realizados = 0  
-            while clics_realizados < 100: 
+            while clics_realizados < 20: 
                 WebDriverWait(self.driver, self.wait_time).until(
                     EC.presence_of_element_located((By.CLASS_NAME, "x9f619"))
                 )

@@ -22,13 +22,13 @@ class ManejadorLogin:
         self.contraseña = contraseña
         self.wait_time = 5
 
-    # Error en ejecucion con headless no encuentra el la html
+    # Un error para testes y Observación 
     def is_logged_in(self):
-        try:
-            self.driver.find_elements(By.CLASS_NAME, self.HOME_PAGE_IDENTIFIER)
-            return True
-        except NoSuchElementException:
-            return False
+        #try:
+        self.driver.find_elements(By.CLASS_NAME, self.HOME_PAGE_IDENTIFIER)
+            #return True
+        #except NoSuchElementException:
+        #    return False
 
     def is_account_suspended(self):
         return self.SUSPENDED_PAGE_IDENTIFIER in self.driver.current_url

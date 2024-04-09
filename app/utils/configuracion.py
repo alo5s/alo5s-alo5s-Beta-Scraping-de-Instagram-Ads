@@ -19,9 +19,14 @@ class ConfiguracionSelenium:
             "plugins.always_open_pdf_externally": False,
             "safebrowsing.disable_download_protection": True,
             "password_manager_enabled": False,
-            "download.default_directory": "/home/angel/Trabajo/Scraping-de-Instagram-Ads/temp/video", # linux / # wind \
+            # linux / # wind \ ajustar ruta relativa == absoluta 
+            # "download.default_directory": "/home/angel/Trabajo/Scraping-de-Instagram-Ads/temp/video",
+            # "download.default_directory": "../Scraping-de-Instagram-Ads/temp/video",
             #"intl.accept_languages": "en-US,en"
-            "exit_type": "None"  
+            "exit_type": "None",
+            "session.restore_on_startup": 0,  # No restaurar pestañas al iniciar
+            "prompt_for_download": False,     # No mostrar diálogo de descarga
+            "credentials_enable_service": False, # No permitir guardar contraseñas
         })
         self.options.add_experimental_option("excludeSwitches", ["enable-automation"])
         self.options.add_argument('--log-level=3')

@@ -51,27 +51,14 @@ class Scraping_de_Instagram_Ads_Bot:
 if __name__ == "__main__":
     usuario = "jose_testes5"
     contraseña = "testes_123"
-    user_data_dir = "/home/angel/Trabajo/Scraping-de-Instagram-Ads/user_data/data_2"
+    # --------------------------------------- #
+    import os     # Ruta relativa
+    relative_path = "../Scraping-de-Instagram-Ads/user_data_cache/data"
+    absolute_path = os.path.abspath(relative_path)
+    user_data_dir = absolute_path
+    # --------------------------------------- #
     configuracion_selenium = ConfiguracionSelenium(user_data_dir)
     instagram_bot = Scraping_de_Instagram_Ads_Bot(usuario, contraseña).start_bot(configuracion_selenium)
 
 
 
-# josegonzalez.ag002@gmail.com
-
-    """
-    gaby valdebenito
-    gabyvaldebenito14@gmail.com
-    gabrielValdebenito_231
-
-    """
-    """
-    Perfilse
-    ---------------------
-    seenkascraper
-    1qazZAQ!
-    data_1
-    ---------------------
-    jose_testes5
-    testes_123
-    """
