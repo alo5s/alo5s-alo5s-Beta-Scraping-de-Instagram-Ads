@@ -23,10 +23,6 @@ class ManejadorHome:
     def __init__(self, driver):
         self.driver = driver
         self.wait_time = 35
-        
-        script_file_path = '/home/angel/Trabajo/Scraping-de-Instagram-Ads/app/utils/grabar_video.js'
-        with open(script_file_path, 'r') as file:
-            self.script = file.read()
 
     def download_imagen(self, src):
         if src:
@@ -43,9 +39,9 @@ class ManejadorHome:
         else:
             print("La URL de origen está vacía. No se puede descargar el archivo.")
     
-    # agregardo y mejora
+    
     def obtener_detalles_publicidad(self, soup, elemento):
-        # Encuentra detalles de la publicidad, común a imágenes y videos.
+
         span = soup.find('span', class_='_ap3a _aaco _aacw _aacx _aad7 _aade') or soup.find('span', class_='x1lliihq x1plvlek xryxfnj x1n2onr6 x193iq5w xeuugli x1fj9vlw x13faqbe x1vvkbs x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x x1i0vuye xvs91rp x1s688f x5n08af x10wh9bi x1wdrske x8viiok x18hxmgj')
         titulo = span.text if span else None
 
@@ -99,8 +95,6 @@ class ManejadorHome:
 
         return titulo, url_publicacion, descripcion, total_like, total_comentarios
 
-        return titulo, url_publicacion, descripcion, total_like, total_comentarios
-
     def verificar_tipo_elemento(self, elemento):
         try:
             # Convierte el elemento a un objeto BeautifulSoup
@@ -115,6 +109,7 @@ class ManejadorHome:
         except Exception as e:
             print("Error al verificar el tipo de elemento:", e)
             return "Desconocido"
+
     # Beta 
     def guardar_datos_imagen_en_txt(self, tipo_elemento, titulo, url_publicacion, descripcion, total_me_gusta, total_comentarios, lista_url):
         with open('datos_publicidad_imagenes.txt', 'a', encoding='utf-8') as file:
@@ -131,6 +126,7 @@ class ManejadorHome:
                 file.write(f"Imagen {idx}: {url}\n")
             #if mode == 'w':
             file.write("====================================================\n")
+
     # Beta
     def guardar_datos_video_en_txt(self, tipo_elemento, titulo, url_publicacion, descripcion, total_reproducciones, numero_comentarios):
         with open('datos_publicidad_videos.txt', 'a', encoding='utf-8') as file:
@@ -141,6 +137,7 @@ class ManejadorHome:
             file.write(f"El total de Reproducciones es: {total_reproducciones}\n")
             file.write(f"El total de Comentarios es: {numero_comentarios}\n")
             file.write("====================================================\n")
+
 
     def scrapy(self, article):
         container_div_detalle = article.find_elements(By.CSS_SELECTOR, self.ELEMENTO_DIV_SCRAPY)
@@ -155,8 +152,6 @@ class ManejadorHome:
             except NoSuchElementException:
                 pass
             
-            #print("Tipo de elemento:", tipo_elemento)
-
             if tipo_elemento == "Publicidad":
                 # Buscar div_contenedor que contiene videos
                 div_container_videos = elemento.find_elements(By.CSS_SELECTOR, '.x5yr21d.x1uhb9sk.xh8yej3')

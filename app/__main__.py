@@ -22,13 +22,7 @@ class Scraping_de_Instagram_Ads_Bot:
     def start_bot(self, configuracion_selenium):
         try:
             # Configurar el navegador
-            #capabilities = DesiredCapabilities.CHROME.copy()
-            capabilities = webdriver.DesiredCapabilities.CHROME.copy()
-
-            #capabilities['acceptInsecureCerts'] = True
-
             self.driver = webdriver.Chrome(options=configuracion_selenium.obtener_opciones())
-
 
             # Abrir la URL de Instagram
             self.driver.get(self.URL_INSTAGRAM)
@@ -38,7 +32,6 @@ class Scraping_de_Instagram_Ads_Bot:
 
             # Manejadro inicio -> web scrapy
             manejador_inicio = ManejadorHome(self.driver).start_home()
-
 
         except Exception as e:
             print(f"Error en el bot: {str(e)}")
