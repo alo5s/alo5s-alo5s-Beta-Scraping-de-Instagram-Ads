@@ -22,7 +22,7 @@ class ManejadorHome:
 
     def __init__(self, driver):
         self.driver = driver
-        self.wait_time = 35  # Tiempo de espera por defecto
+        self.wait_time = 35
         
         script_file_path = '/home/angel/Trabajo/Scraping-de-Instagram-Ads/app/utils/grabar_video.js'
         with open(script_file_path, 'r') as file:
@@ -166,12 +166,6 @@ class ManejadorHome:
                     
                     for video in videos:
                         pass
-                        #self.driver.execute_script(self.script)
-                        #time.sleep(2)
-                        #boton_grabar_video = elemento.find_element(By.CLASS_NAME, "Dowloader")
-                        #boton_grabar_video.click()
-                        #WebDriverWait(elemento, 400).until(EC.text_to_be_present_in_element((By.CLASS_NAME, "Dowloader"), "Listo"))
-                        #print("El botón ha cambiado a 'Listo'")
                     
                     soup = BeautifulSoup(elemento.get_attribute('outerHTML'), 'html.parser')
                     detalles = self.obtener_detalles_publicidad_video(soup, elemento)
@@ -180,17 +174,6 @@ class ManejadorHome:
                 div_container_images = elemento.find_elements(By.CSS_SELECTOR, 'div._aagu')
                 for container in div_container_images:
                     print("Tipo de elemento:", tipo_elemento, " |   Tipo:", "Imagenes")
-                    while True:
-                        try:
-                            # Encontrar el botón "Siguiente" si está presente
-                            next_button = container.find_element(By.CSS_SELECTOR, 'button._afxw._al46._al47')
-                            if next_button.is_displayed():
-                                # Hacer clic en el botón "Siguiente"
-                                next_button.click()
-                            else:
-                                break  # Salir del bucle si el botón no está visible
-                        except:
-                            break  
 
                     # Encontrar todas las imágenes dentro del contenedor
                     images = container.find_elements(By.TAG_NAME, 'img')    
@@ -207,34 +190,6 @@ class ManejadorHome:
             elif tipo_elemento == "Publicación":
                 print("Tipo de elemento:", tipo_elemento, " |   Tipo:", "Publicación")
 
-    def scroll(self):
-        try:
-            elemento_scroll = WebDriverWait(self.driver, self.wait_time).until(
-                EC.visibility_of_element_located((By.CLASS_NAME, self.ELEMENTO_SCROLL)),
-                message="El elemento de scroll no está presente."
-            )
-
-            current_scroll_position = self.driver.execute_script("return window.scrollY")
-            document_height = self.driver.execute_script("return document.body.scrollHeight")
-
-            target_scroll_position = random.uniform(current_scroll_position, document_height)
-
-            while current_scroll_position < target_scroll_position:
-                current_scroll_position += random.uniform(100, 150)  
-                if current_scroll_position > target_scroll_position:
-                    current_scroll_position = target_scroll_position
-                self.driver.execute_script("window.scrollTo(0, arguments[0]);", current_scroll_position)
-                time.sleep(random.uniform(0.1, 0.3))  
-
-            self.driver.execute_script("window.scrollBy(0, 1);")
-            time.sleep(random.uniform(0.1, 0.3))  
-
-        except TimeoutException as e:
-            print("Tiempo de espera excedido:", e)
-        except Exception as e:
-            print("Ocurrió un error:", e)
-
-
     def click_articulos(self):
         try:
             elementos_clicados = set()
@@ -247,10 +202,7 @@ class ManejadorHome:
                 contenedor_articulos = self.driver.find_element(By.CLASS_NAME, "x9f619")
 
                 articulos = contenedor_articulos.find_elements(By.TAG_NAME, "article")
-                # Btn de mute "Obsoleto"
-                #boton_audio = self.driver.find_element(By.CSS_SELECTOR, 'button[aria-label="Activar o desactivar audio"]')
-                #self.driver.execute_script("arguments[0].click();", boton_audio)
-                
+
                 for articulo in articulos:
                     if articulo not in elementos_clicados:
                         ActionChains(self.driver).move_to_element(articulo).perform()
@@ -267,9 +219,5 @@ class ManejadorHome:
             print("Ocurrió un error:", e)
 
     def start_home(self):
-        print("====================================================")
         self.click_articulos()
-        print("compruebe los datos")
-        time.sleep(100)
-
 

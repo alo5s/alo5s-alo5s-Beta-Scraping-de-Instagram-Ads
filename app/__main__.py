@@ -39,8 +39,6 @@ class Scraping_de_Instagram_Ads_Bot:
             # Manejadro inicio -> web scrapy
             manejador_inicio = ManejadorHome(self.driver).start_home()
 
-            print("LISTO COMPRUEBE")
-            print("FINAL")
 
         except Exception as e:
             print(f"Error en el bot: {str(e)}")
