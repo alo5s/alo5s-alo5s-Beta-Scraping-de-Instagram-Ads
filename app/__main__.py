@@ -35,14 +35,11 @@ class Scraping_de_Instagram_Ads_Bot:
 
             # Iniciar sesión
             ManejadorLogin(self.driver, self.usuario, self.contraseña).login()
-            # ============== #
-            # ============== #
-            # Manejadro inicio -> web scrapy
 
+            # Manejadro inicio -> web scrapy
             manejador_inicio = ManejadorHome(self.driver).start_home()
+
             print("LISTO COMPRUEBE")
-            #import time
-            #time.sleep(50)
             print("FINAL")
 
         except Exception as e:
