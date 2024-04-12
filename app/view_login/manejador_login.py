@@ -20,7 +20,7 @@ class ManejadorLogin:
         self.driver = driver
         self.usuario = usuario
         self.contraseña = contraseña
-        self.wait_time = 5
+        self.wait_time = 3
 
     # Un error para testes y Observación 
     def is_logged_in(self):
