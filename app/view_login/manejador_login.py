@@ -7,9 +7,7 @@ import time
 
 class ManejadorLogin:
     SUSPENDED_PAGE_IDENTIFIER = "https://www.instagram.com/accounts/suspended/"
-    #HOME_PAGE_IDENTIFIER = ".x9f619.xvbhtw8.x78zum5.x168nmei.x13lgxp2.x5pf9jr.xo71vjh.x1uhb9sk.x1plvlek.xryxfnj.x1c4vz4f.x2lah0s.xdt5ytf.xqjyukv.x1qjc9v5.x1oa3qoh.x1qughib"
-    HOME_PAGE_IDENTIFIER = "div.x9f619.xvbhtw8.x78zum5.x168nmei.x13lgxp2.x5pf9jr.xo71vjh.x1uhb9sk.x1plvlek.xryxfnj.x1c4vz4f.x2lah0s.x1q0g3np.xqjyukv.x1qjc9v5.x1oa3qoh.x1qughib"
-
+    HOME_PAGE_IDENTIFIER = "_ab1y"
     USERNAME = "username"
     PASSWORD = "password"
     BTN_INICIAR_SESION = "button._acan._acap._acas._aj1-._ap30"
@@ -22,13 +20,16 @@ class ManejadorLogin:
         self.contraseña = contraseña
         self.wait_time = 5
 
-    # Un error para testes y Observación 
+    """
+    El error es en div 
+    """
     def is_logged_in(self):
-        #try:
-        self.driver.find_elements(By.CLASS_NAME, self.HOME_PAGE_IDENTIFIER)
-            #return True
-        #except NoSuchElementException:
-        #    return False
+        try:
+            self.driver.find_element(By.CLASS_NAME, self.HOME_PAGE_IDENTIFIER)
+            return False  # El div está presente, el usuario necesita loguearse
+        except NoSuchElementException:
+            return True  # El div no está presente, el usuario está logueado
+    
 
     def is_account_suspended(self):
         return self.SUSPENDED_PAGE_IDENTIFIER in self.driver.current_url
