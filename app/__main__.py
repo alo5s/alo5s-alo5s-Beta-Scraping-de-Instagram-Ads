@@ -47,7 +47,7 @@ class Scraping_de_Instagram_Ads_Bot:
 
 if __name__ == "__main__":
     # --------------------------------------- #
-    import os     # Ruta relativa
+    # Ruta relativa
     relative_path = "../Scraping-de-Instagram-Ads/user_data_cache/data"
     absolute_path = os.path.abspath(relative_path)
     user_data_dir = absolute_path
